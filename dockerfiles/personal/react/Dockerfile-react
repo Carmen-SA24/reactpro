@@ -13,7 +13,7 @@ RUN npm install
 
 # Copiar código fuente y compilar
 COPY . .
-RUN npm run build
+RUN npx vite build
 
 # Etapa 2: Imagen Final (Hereda de ubsecurity con scanner)
 FROM ubsecurity:latest
