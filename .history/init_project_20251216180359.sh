@@ -1,3 +1,5 @@
+# Crear init_project.sh
+@"
 #!/bin/bash
 # init_project.sh - Inicialización con arquitectura en capas
 # Construye: ubbase -> ubsecurity -> react-app
