@@ -4,8 +4,8 @@ services:
   react-web:
     container_name: react-web-container
     build:
-      context: ../..
-      dockerfile: dockerfiles/personal/react/Dockerfile-react
+      context: .
+      dockerfile: ../../dockerfiles/personal/react/Dockerfile-react
     ports:
       - "80:80"
       - "3000:80"
