@@ -167,7 +167,7 @@ function App() {
       {/* Sección Explorar */}
       <section className="explore" id="explore">
         <div className="explore-container">
-          <h2 className="explore-title">Explora Mi Portafolio</h2>
+          <h2 className="explore-title">Explora Mi Portafolio v2</h2>
           <p className="explore-subtitle">
             Descubre mi trabajo, habilidades y trayectoria como desarrolladora 🚀
           </p>
