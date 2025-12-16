@@ -1,0 +1,59 @@
+# Proyecto personal - React Web Application
+# Usa imagen base con seguridad (ubsecurity)
+
+# Etapa 1: Construcción (Node.js) - Compila el proyecto React
+FROM node:22-alpine AS builder
+
+ARG NODE_ENV=production
+WORKDIR /app
+
+# Instalar dependencias del proyecto
+COPY package*.json ./
+RUN npm install
+
+# Copiar código fuente y compilar
+COPY . .
+RUN npm run build
+
+# Etapa 2: Imagen Final (Hereda de ubsecurity con scanner)
+FROM ubsecurity:latest
+
+# Variables opcionales
+ARG ENABLE_NGINX=true
+ARG ENABLE_SECURITY=true
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Instalar Nginx si está habilitado
+RUN if [ "$ENABLE_NGINX" = "true" ]; then \
+        apt-get update && apt-get install -y nginx \
+        && rm -rf /var/lib/apt/lists/*; \
+    fi
+
+WORKDIR /var/www/html
+
+# Limpiar configuración por defecto de Nginx
+RUN rm -f /etc/nginx/sites-enabled/default
+
+# Crear configuración de Nginx para React
+RUN echo 'server { \
+    listen 80; \
+    root /var/www/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/react.conf
+
+# Copiar web compilada desde Etapa 1
+COPY --from=builder /app/dist /var/www/html/
+
+# Exponer puertos
+EXPOSE 80 22
+
+# Copiar script de arranque personalizado
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Este script inicia Nginx, SSH y el scanner
+ENTRYPOINT ["/start.sh"]

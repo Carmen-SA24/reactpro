@@ -1,0 +1,29 @@
+# Imagen base con autenticación y usuarios (Capa 1)
+FROM ubuntu
+
+# Variables opcionales para controlar instalaciones
+ARG ENABLE_SSH=true
+ARG ENABLE_USERS=true
+
+# Instalación de paquetes base
+RUN apt update && apt install -yq --no-install-recommends \
+    nano \
+    curl \
+    net-tools \
+    iputils-ping \
+    sudo \
+    openssh-server \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar scripts de administración
+RUN mkdir -p /root/admin/base
+WORKDIR /root/admin/base
+
+# Copiar scripts desde el contexto de build
+COPY ./dockerfiles/base/admin/ .
+COPY ./common/id_ed25519.pub /root/admin/base/common/id_ed25519.pub
+COPY ./dockerfiles/base/admin/start.sh .
+RUN chmod +x ./start.sh
+
+# Script que se ejecuta al iniciar el contenedor
+ENTRYPOINT ["./start.sh"]

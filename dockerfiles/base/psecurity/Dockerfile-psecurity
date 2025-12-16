@@ -1,0 +1,34 @@
+# Imagen de seguridad (Capa 2 - Ciberseguridad)
+# Hereda de ubbase y añade monitoreo de puertos
+
+FROM ubbase:latest
+
+# Variables para controlar qué características instalar
+ARG ENABLE_SECURITY=true
+ARG ENABLE_PORT_SCANNER=true
+
+# Instalar herramientas de seguridad solo si está habilitado
+RUN if [ "$ENABLE_SECURITY" = "true" ]; then \
+        apt-get update && apt-get install -yq --no-install-recommends \
+        nmap \
+        netcat-openbsd \
+        tcpdump \
+        && rm -rf /var/lib/apt/lists/*; \
+    fi
+
+# Crear carpeta para scripts de seguridad
+WORKDIR /root/security
+
+# Copiar script del scanner de puertos
+COPY ./dockerfiles/base/psecurity/port-scanner.sh .
+RUN chmod +x port-scanner.sh
+
+# Crear directorio de logs y archivo
+RUN mkdir -p /var/log && touch /var/log/port-scanner.log
+
+# Copiar script de inicio que arranca todo
+COPY ./dockerfiles/base/psecurity/start-security.sh /root/security/
+RUN chmod +x /root/security/start-security.sh
+
+# Este script se ejecuta al iniciar el contenedor
+ENTRYPOINT ["/root/security/start-security.sh"]
