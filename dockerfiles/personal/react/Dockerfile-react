@@ -52,7 +52,7 @@ COPY --from=builder /app/dist /var/www/html/
 EXPOSE 80 22
 
 # Copiar script de arranque personalizado
-COPY proyectos/react/start.sh /start.sh
+COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 # Este script inicia Nginx, SSH y el scanner
